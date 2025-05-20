@@ -1,4 +1,4 @@
-# Code Deck | An Online IDE
+# Rushi's Code Editor | An Online IDE
 
 ## Project Objective
 
