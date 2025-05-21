@@ -1,0 +1,29 @@
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - docker info
+
+stages:
+  - build
+  - deploy
+
+build_job:
+  stage: build
+  script: |
+    echo "Building the application.."
+    docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    docker build -t rushidonga/code-terminal:$CI_COMMIT_SHA .
+    docker push rushidonga/code-terminal:$CI_COMMIT_SHA
+
+deploy_job:
+  stage: deploy
+  script: |
+    docker pull rushidonga/code-terminal:$CI_COMMIT_SHA
+    docker rm -f react-app-container
+    docker run -d -p 5000:3000 --name react-app-container rushidonga/code-terminal:$CI_COMMIT_SHA
+  tags:
+    - i-0b7d4010c30f4be73-runner
+  only:
+    - deploy-to-ec2  
